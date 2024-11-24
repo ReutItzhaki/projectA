@@ -103,6 +103,15 @@ class PolicyNetwork(nn.Module):
         return dist
 
     def save_model(self):
+         # Ensure the parent directory exists
+        save_dir = os.path.dirname(self.checkpoint_file)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)  # Create the directory if it doesn't exist
+    
+        # Now save the model
+        torch.save(self.state_dict(), self.checkpoint_file)
+
+
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_model(self):
