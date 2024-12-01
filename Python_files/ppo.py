@@ -189,6 +189,7 @@ class Agent:
         self.memory = Memory(batch_size, capacity)
        
     def remember(self, observation, action, probs, vals, reward, done):
+        #print('remmember')
         self.memory.store_memory(observation, action, probs, vals, reward, done)
 
     def save_models(self):
@@ -202,6 +203,7 @@ class Agent:
         self.critic.load_model()
 
     def choose_action(self, observation):
+        #print('chooseAct')
         state = torch.tensor(observation, dtype=torch.float32).to(self.actor.device)
         dist = self.actor(state)
         value = self.critic(state)
@@ -216,7 +218,7 @@ class Agent:
         return action_np, log_probs_np, value
 
     def learn(self):
-
+        print('learn')
         writer_1 = SummaryWriter('log_dir')
 
         for _ in range(self.n_epochs):

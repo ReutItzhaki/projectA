@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(os.getcwd())
 import numpy as np
 import gymnasium as gym
 import gym_examples
 from gym_examples.envs.sumo_env import SumoEnv
 from ppo import Agent
 from torch.utils.tensorboard import SummaryWriter
-
+import torch
+#from torch.profiler import profile, record_function, ProfilerActivity
 
 writer = SummaryWriter('log_dir')
 env = gym.make("gym_examples/Sumo")
@@ -24,6 +28,7 @@ total_step = 0
 # agent.load_models()
 
 for _ in range(500):
+    print('hey')
     score_history = []
     for _ in range(n_episodes):
         observation, info = env.reset()
@@ -41,6 +46,7 @@ for _ in range(500):
             agent.remember(observation, action, log_probs, val, reward, done)
             observation = observation_
         
+        print('end while')
         score_history.append(score)
         writer.add_scalar('Performance/Reward', score, episode)
         print(f"episode: {episode}, score: {score:.2f}")
