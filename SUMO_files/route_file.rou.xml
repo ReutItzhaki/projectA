@@ -5,7 +5,7 @@
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <!-- VTypes -->
-    <vType id="car" lcStrategic="120" lcCooperative="1.0"/>
+    <vType id="car" lcStrategic="120" lcCooperative="1.0" maxSpeed="16"/>
     <!-- Vehicles, persons and containers (sorted by depart) -->
     <trip id="10144" type="car" depart="0.00" from="f17" to="d98"/>
     <trip id="11328" type="car" depart="0.00" from="f19" to="d96"/>

@@ -12,9 +12,9 @@ class SumoEnv(gym.Env):
     
     def __init__(self, device = 'cpu'):
         super().__init__()
-        self.n_observations = 28
+        self.n_observations = 56 #24 + 4 + 24 + 4 = 56
         self.n_actions = 24
-        self.observation_space = spaces.Box(low=np.array([0.0]*28, dtype=np.float32), high=np.array([1.0]*28, dtype=np.float32), dtype=np.float32) 
+        self.observation_space = spaces.Box(low=np.array([0.0]*56, dtype=np.float32), high=np.array([1.0]*56, dtype=np.float32), dtype=np.float32) 
         self.action_space = spaces.MultiBinary(self.n_actions)
         self.control_cycle = 50
         self.render_mode = None 
@@ -53,12 +53,39 @@ class SumoEnv(gym.Env):
                             "d81", "d82", "d83", "d84", "d85", "d86", "d87", "d88", "d89", "E22", "E24", "E26",
                             "E16", "E18", "E20")
         }
-        
+    """    
     def count_vehicles_in_zone(self, zone_id):
         count = 0
         for edges in self.zones[f"zone_{zone_id}"]:
             count += traci.edge.getLastStepVehicleNumber(edgeID=edges) + traci.edge.getLastStepVehicleNumber(edgeID=f"-{edges}")
         return count
+    """
+    def count_vehicles_in_zone(self, zone_id):
+        edges = self.zones[f"zone_{zone_id}"]
+        vehicle_counts = np.array(
+            [traci.edge.getLastStepVehicleNumber(edgeID=edge) + 
+            traci.edge.getLastStepVehicleNumber(edgeID=f"-{edge}") 
+            for edge in edges]
+        )
+        return np.sum(vehicle_counts)
+    """
+    def mean_speed_of_zone(self, zone_id):
+        total_mean_speeds = 0
+        for edges in self.zones[f"zone_{zone_id}"]:
+            total_mean_speeds += traci.edge.getLastStepMeanSpeed(edgeID=edges)
+        mean_speed= total_mean_speeds / len(self.zones[f"zone_{zone_id}"])
+        max_speed = 16
+        min_speed = 0
+
+        #normalized_mean_speed = (mean_speed - min_speed) / (max_speed - min_speed)
+        #return normalized_mean_speed
+        return mean_speed
+    """
+    def mean_speed_of_zone(self, zone_id):
+        # Batch fetching and computing mean speed
+        speeds = [traci.edge.getLastStepMeanSpeed(edgeID=edge) for edge in self.zones[f"zone_{zone_id}"]]
+        return np.mean(speeds)  # Use np.mean instead of summing manuall
+    
     def _getinfo(self):
         info = {
             "info": None
@@ -77,7 +104,7 @@ class SumoEnv(gym.Env):
         traci.start(self.sumo_simulation)
         self.traci_connected = True
         info = self._getinfo()
-        observation = np.zeros(28, dtype=np.float32)
+        observation = np.zeros(56, dtype=np.float32)
         self.step_count = 0        
         return observation, info
     
@@ -101,25 +128,55 @@ class SumoEnv(gym.Env):
                 break
 
         feeder_densities = np.zeros(24, dtype=np.float32)
+        feeder_mean_speeds = np.zeros(24, dtype=np.float32)
+        max_vehicle_speed = 0
+        vehicle_ids = traci.edge.getLastStepVehicleIDs(edgeID=f"f1")  # Get the list of vehicles on the road
+
+        """" used to get the max speed of vehicles on the road 
+        for vehicle_id in vehicle_ids:
+            speed = traci.vehicle.getSpeed(vehicle_id)  # Get speed of each vehicle
+            max_vehicle_speed = max(max_vehicle_speed, speed)  # Track the maximum speed of vehicles on the road
+        print(f"Max speed of vehicles on road 1: {max_vehicle_speed}")
+        """
         for i in range (24):
+            #print(f"Max speed of feeder f{i+1}: {traci.edge.getSpeed(edgeID=f'f{i+1}')}")
             feeder_densities[i] = traci.edge.getLastStepVehicleNumber(edgeID=f"f{i+1}")
             if(feeder_densities[i] > 800):
-                feeder_densities[i] = 800    
+                feeder_densities[i] = 800
+
+            feeder_mean_speeds[i] = traci.edge.getLastStepMeanSpeed(edgeID=f"f{i+1}")
 
         protected_region_densities = np.zeros(4, dtype=np.float32)
+        protected_region_mean_speeds = np.zeros(4, dtype=np.float32)
+
         for i in range(4):
             protected_region_densities[i] = self.count_vehicles_in_zone(i+1)
             if(protected_region_densities[i] > 1200):
                 protected_region_densities[i] = 1200
 
+            protected_region_mean_speeds[i] = self.mean_speed_of_zone(i+1)
+
         feeder_densities = feeder_densities / 800
         protected_region_densities = protected_region_densities / 1200
+        protected_region_mean_speeds = protected_region_mean_speeds / 16
+        feeder_mean_speeds = feeder_mean_speeds / 16
 
         info = self._getinfo()
-        observation = np.concatenate([protected_region_densities, feeder_densities])
-        reward = -(vcl.getIDCount())
-        reward = float(reward)
-        reward /= 5000        
+        observation = np.concatenate([protected_region_densities, feeder_densities, protected_region_mean_speeds, feeder_mean_speeds])
+        
+        # Calculate the reward based on vehicle count and speeds
+        # Penalize higher vehicle count
+        vehicle_count_penalty = -(vcl.getIDCount()) / 5000.0
+        # Reward based on mean speed (higher speeds are rewarded)
+        mean_speed_reward = 0
+        for speed in protected_region_mean_speeds:
+            mean_speed_reward += speed
+        for speed in feeder_mean_speeds:
+            mean_speed_reward += speed
+        mean_speed_reward /= 28
+        mean_speed_reward = mean_speed_reward * 0.5
+
+        reward = vehicle_count_penalty + mean_speed_reward        
         if (self.step_count == 160):
             terminated = True
 
