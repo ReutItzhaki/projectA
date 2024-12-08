@@ -7,7 +7,6 @@ from traci import vehicle as vcl
 from sumolib import checkBinary
 
 
-
 class SumoEnv(gym.Env):
     
     def __init__(self, device = 'cpu'):

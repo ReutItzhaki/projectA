@@ -1,5 +1,9 @@
 import warnings
 warnings.filterwarnings("ignore")
+import gym
+from gym import spaces, Wrapper
+#from gym import register
+from gym.envs.registration import register
 from torch import multiprocessing
 
 
@@ -22,6 +26,7 @@ from torchrl.modules import ProbabilisticActor, TanhNormal, ValueOperator
 from torchrl.objectives import ClipPPOLoss
 from torchrl.objectives.value import GAE
 from tqdm import tqdm
+#from sumo_env import GymWrapper, SumoEnv #import the sumo environment
 
 ### Define Hyperparameters ###
 
@@ -32,18 +37,19 @@ device = (
     else torch.device("cpu")
 )
 num_cells = 256  # number of cells in each layer i.e. output dim.
-lr = 3e-4
-max_grad_norm = 1.0
+lr = 3e-4 # learning rate
+max_grad_norm = 1.0 # gradient clipping
 
 
 ### Data collection parameters ###
-frames_per_batch = 1000
+frames_per_batch = 1000 
 # For a complete training, bring the number of frames up to 1M
 total_frames = 50_000
 
 ### PPO parameters ###
 sub_batch_size = 64  # cardinality of the sub-samples gathered from the current data in the inner loop
 num_epochs = 10  # optimization steps per batch of data collected
+#ephochs are the number of times we go through the data
 clip_epsilon = (
     0.2  # clip value for PPO loss: see the equation in the intro for more context.
 )
@@ -52,26 +58,28 @@ lmbda = 0.95
 entropy_eps = 1e-4
 
 ### Define an environment ###
-base_env = GymEnv("InvertedDoublePendulum-v4", device=device)
-
-env = TransformedEnv(
-    base_env,
-    Compose(
-        # normalize observations
-        ObservationNorm(in_keys=["observation"]),
-        DoubleToFloat(),
-        StepCounter(),
-    ),
+register(
+    id="SumoEnv-v0", 
+    entry_point="sumo_env:SumoEnv", #import the sumo environment
 )
+env = gym.make("SumoEnv-v0") #create the environment
 
-env.transform[0].init_stats(num_iter=1000, reduce_dim=0, cat_dim=0)
+
+# Wrap with TorchRL's GymWrapper
+
+#env = GymEnv("SumoEnv-v0") #create the environment, the device is the cpu used by sumo, we want to pass a sumo_config_file to the environment
+#wrapped_env = GymWrapper(env)
+#env = TransformedEnv(base_env, 
+#                     Compose([DoubleToFloat(), ObservationNorm(), StepCounter()])) #transform the environment
+#env.transform[0].init_stats(num_iter=1000, reduce_dim=0, cat_dim=0) 
 
 ### print information about environment and check env ###
-print("observation_spec:", env.observation_spec)
-print("reward_spec:", env.reward_spec)
-print("input_spec:", env.input_spec)
-print("action_spec (as defined by input_spec):", env.action_spec)
-check_env_specs(env)
+print("observation_spec:", env.observation_space)
+#print("reward_spec:", env.)
+print("input_spec:", env.action_space)
+#print("action_spec (as defined by input_spec):", env.action_spec)
+
+#check_env_specs(env)
 
 
 ### Policy ###
