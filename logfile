@@ -1,0 +1,602 @@
+ Retrying in 1 seconds
+... Saving Models ......
+episode 0 score -9.1 avg score -9.1 time_steps 160 learning_steps 8
+ Retrying in 1 seconds
+episode 1 score -9.1 avg score -9.1 time_steps 320 learning_steps 16
+ Retrying in 1 seconds
+episode 2 score -9.1 avg score -9.1 time_steps 480 learning_steps 24
+ Retrying in 1 seconds
+episode 3 score -9.1 avg score -9.1 time_steps 640 learning_steps 32
+ Retrying in 1 seconds
+episode 4 score -9.1 avg score -9.1 time_steps 800 learning_steps 40
+ Retrying in 1 seconds
+episode 5 score -9.1 avg score -9.1 time_steps 960 learning_steps 48
+ Retrying in 1 seconds
+episode 6 score -9.1 avg score -9.1 time_steps 1120 learning_steps 56
+ Retrying in 1 seconds
+episode 7 score -9.1 avg score -9.1 time_steps 1280 learning_steps 64
+ Retrying in 1 seconds
+episode 8 score -9.1 avg score -9.1 time_steps 1440 learning_steps 72
+ Retrying in 1 seconds
+... Saving Models ......
+episode 9 score -9.1 avg score -9.1 time_steps 1600 learning_steps 80
+ Retrying in 1 seconds
+episode 10 score -9.1 avg score -9.1 time_steps 1760 learning_steps 88
+ Retrying in 1 seconds
+episode 11 score -9.1 avg score -9.1 time_steps 1920 learning_steps 96
+ Retrying in 1 seconds
+episode 12 score -9.1 avg score -9.1 time_steps 2080 learning_steps 104
+ Retrying in 1 seconds
+episode 13 score -9.1 avg score -9.1 time_steps 2240 learning_steps 112
+ Retrying in 1 seconds
+episode 14 score -9.1 avg score -9.1 time_steps 2400 learning_steps 120
+ Retrying in 1 seconds
+episode 15 score -9.1 avg score -9.1 time_steps 2560 learning_steps 128
+ Retrying in 1 seconds
+episode 16 score -9.1 avg score -9.1 time_steps 2720 learning_steps 136
+ Retrying in 1 seconds
+episode 17 score -9.1 avg score -9.1 time_steps 2880 learning_steps 144
+ Retrying in 1 seconds
+episode 18 score -9.1 avg score -9.1 time_steps 3040 learning_steps 152
+ Retrying in 1 seconds
+episode 19 score -9.1 avg score -9.1 time_steps 3200 learning_steps 160
+ Retrying in 1 seconds
+episode 20 score -9.1 avg score -9.1 time_steps 3360 learning_steps 168
+ Retrying in 1 seconds
+episode 21 score -9.1 avg score -9.1 time_steps 3520 learning_steps 176
+ Retrying in 1 seconds
+episode 22 score -9.1 avg score -9.1 time_steps 3680 learning_steps 184
+ Retrying in 1 seconds
+episode 23 score -9.1 avg score -9.1 time_steps 3840 learning_steps 192
+ Retrying in 1 seconds
+episode 24 score -9.1 avg score -9.1 time_steps 4000 learning_steps 200
+ Retrying in 1 seconds
+episode 25 score -9.1 avg score -9.1 time_steps 4160 learning_steps 208
+ Retrying in 1 seconds
+episode 26 score -9.1 avg score -9.1 time_steps 4320 learning_steps 216
+ Retrying in 1 seconds
+episode 27 score -9.1 avg score -9.1 time_steps 4480 learning_steps 224
+ Retrying in 1 seconds
+episode 28 score -9.1 avg score -9.1 time_steps 4640 learning_steps 232
+ Retrying in 1 seconds
+episode 29 score -9.1 avg score -9.1 time_steps 4800 learning_steps 240
+ Retrying in 1 seconds
+episode 30 score -9.1 avg score -9.1 time_steps 4960 learning_steps 248
+ Retrying in 1 seconds
+episode 31 score -9.1 avg score -9.1 time_steps 5120 learning_steps 256
+ Retrying in 1 seconds
+episode 32 score -9.1 avg score -9.1 time_steps 5280 learning_steps 264
+ Retrying in 1 seconds
+episode 33 score -9.1 avg score -9.1 time_steps 5440 learning_steps 272
+ Retrying in 1 seconds
+episode 34 score -9.1 avg score -9.1 time_steps 5600 learning_steps 280
+ Retrying in 1 seconds
+episode 35 score -9.1 avg score -9.1 time_steps 5760 learning_steps 288
+ Retrying in 1 seconds
+episode 36 score -9.1 avg score -9.1 time_steps 5920 learning_steps 296
+ Retrying in 1 seconds
+episode 37 score -9.1 avg score -9.1 time_steps 6080 learning_steps 304
+ Retrying in 1 seconds
+episode 38 score -9.1 avg score -9.1 time_steps 6240 learning_steps 312
+ Retrying in 1 seconds
+episode 39 score -9.1 avg score -9.1 time_steps 6400 learning_steps 320
+ Retrying in 1 seconds
+episode 40 score -9.1 avg score -9.1 time_steps 6560 learning_steps 328
+ Retrying in 1 seconds
+episode 41 score -9.1 avg score -9.1 time_steps 6720 learning_steps 336
+ Retrying in 1 seconds
+episode 42 score -9.1 avg score -9.1 time_steps 6880 learning_steps 344
+ Retrying in 1 seconds
+episode 43 score -9.1 avg score -9.1 time_steps 7040 learning_steps 352
+ Retrying in 1 seconds
+episode 44 score -9.1 avg score -9.1 time_steps 7200 learning_steps 360
+ Retrying in 1 seconds
+episode 45 score -9.1 avg score -9.1 time_steps 7360 learning_steps 368
+ Retrying in 1 seconds
+episode 46 score -9.1 avg score -9.1 time_steps 7520 learning_steps 376
+ Retrying in 1 seconds
+episode 47 score -9.1 avg score -9.1 time_steps 7680 learning_steps 384
+ Retrying in 1 seconds
+episode 48 score -9.1 avg score -9.1 time_steps 7840 learning_steps 392
+ Retrying in 1 seconds
+episode 49 score -9.1 avg score -9.1 time_steps 8000 learning_steps 400
+ Retrying in 1 seconds
+episode 50 score -9.1 avg score -9.1 time_steps 8160 learning_steps 408
+ Retrying in 1 seconds
+episode 51 score -9.1 avg score -9.1 time_steps 8320 learning_steps 416
+ Retrying in 1 seconds
+episode 52 score -9.1 avg score -9.1 time_steps 8480 learning_steps 424
+ Retrying in 1 seconds
+episode 53 score -9.1 avg score -9.1 time_steps 8640 learning_steps 432
+ Retrying in 1 seconds
+episode 54 score -9.1 avg score -9.1 time_steps 8800 learning_steps 440
+ Retrying in 1 seconds
+episode 55 score -9.1 avg score -9.1 time_steps 8960 learning_steps 448
+ Retrying in 1 seconds
+episode 56 score -9.1 avg score -9.1 time_steps 9120 learning_steps 456
+ Retrying in 1 seconds
+episode 57 score -9.1 avg score -9.1 time_steps 9280 learning_steps 464
+ Retrying in 1 seconds
+episode 58 score -9.1 avg score -9.1 time_steps 9440 learning_steps 472
+ Retrying in 1 seconds
+episode 59 score -9.1 avg score -9.1 time_steps 9600 learning_steps 480
+ Retrying in 1 seconds
+episode 60 score -9.1 avg score -9.1 time_steps 9760 learning_steps 488
+ Retrying in 1 seconds
+episode 61 score -9.1 avg score -9.1 time_steps 9920 learning_steps 496
+ Retrying in 1 seconds
+episode 62 score -9.1 avg score -9.1 time_steps 10080 learning_steps 504
+ Retrying in 1 seconds
+episode 63 score -9.1 avg score -9.1 time_steps 10240 learning_steps 512
+ Retrying in 1 seconds
+episode 64 score -9.1 avg score -9.1 time_steps 10400 learning_steps 520
+ Retrying in 1 seconds
+episode 65 score -9.1 avg score -9.1 time_steps 10560 learning_steps 528
+ Retrying in 1 seconds
+episode 66 score -9.1 avg score -9.1 time_steps 10720 learning_steps 536
+ Retrying in 1 seconds
+episode 67 score -9.1 avg score -9.1 time_steps 10880 learning_steps 544
+ Retrying in 1 seconds
+episode 68 score -9.1 avg score -9.1 time_steps 11040 learning_steps 552
+ Retrying in 1 seconds
+episode 69 score -9.1 avg score -9.1 time_steps 11200 learning_steps 560
+ Retrying in 1 seconds
+episode 70 score -9.1 avg score -9.1 time_steps 11360 learning_steps 568
+ Retrying in 1 seconds
+episode 71 score -9.1 avg score -9.1 time_steps 11520 learning_steps 576
+ Retrying in 1 seconds
+episode 72 score -9.1 avg score -9.1 time_steps 11680 learning_steps 584
+ Retrying in 1 seconds
+episode 73 score -9.1 avg score -9.1 time_steps 11840 learning_steps 592
+ Retrying in 1 seconds
+episode 74 score -9.1 avg score -9.1 time_steps 12000 learning_steps 600
+ Retrying in 1 seconds
+episode 75 score -9.1 avg score -9.1 time_steps 12160 learning_steps 608
+ Retrying in 1 seconds
+episode 76 score -9.1 avg score -9.1 time_steps 12320 learning_steps 616
+ Retrying in 1 seconds
+episode 77 score -9.1 avg score -9.1 time_steps 12480 learning_steps 624
+ Retrying in 1 seconds
+episode 78 score -9.1 avg score -9.1 time_steps 12640 learning_steps 632
+ Retrying in 1 seconds
+episode 79 score -9.1 avg score -9.1 time_steps 12800 learning_steps 640
+ Retrying in 1 seconds
+episode 80 score -9.1 avg score -9.1 time_steps 12960 learning_steps 648
+ Retrying in 1 seconds
+episode 81 score -9.1 avg score -9.1 time_steps 13120 learning_steps 656
+ Retrying in 1 seconds
+episode 82 score -9.1 avg score -9.1 time_steps 13280 learning_steps 664
+ Retrying in 1 seconds
+episode 83 score -9.1 avg score -9.1 time_steps 13440 learning_steps 672
+ Retrying in 1 seconds
+episode 84 score -9.1 avg score -9.1 time_steps 13600 learning_steps 680
+ Retrying in 1 seconds
+episode 85 score -9.1 avg score -9.1 time_steps 13760 learning_steps 688
+ Retrying in 1 seconds
+episode 86 score -9.1 avg score -9.1 time_steps 13920 learning_steps 696
+ Retrying in 1 seconds
+episode 87 score -9.1 avg score -9.1 time_steps 14080 learning_steps 704
+ Retrying in 1 seconds
+episode 88 score -9.1 avg score -9.1 time_steps 14240 learning_steps 712
+ Retrying in 1 seconds
+episode 89 score -9.1 avg score -9.1 time_steps 14400 learning_steps 720
+ Retrying in 1 seconds
+episode 90 score -9.1 avg score -9.1 time_steps 14560 learning_steps 728
+ Retrying in 1 seconds
+episode 91 score -9.1 avg score -9.1 time_steps 14720 learning_steps 736
+ Retrying in 1 seconds
+episode 92 score -9.1 avg score -9.1 time_steps 14880 learning_steps 744
+ Retrying in 1 seconds
+episode 93 score -9.1 avg score -9.1 time_steps 15040 learning_steps 752
+ Retrying in 1 seconds
+episode 94 score -9.1 avg score -9.1 time_steps 15200 learning_steps 760
+ Retrying in 1 seconds
+episode 95 score -9.1 avg score -9.1 time_steps 15360 learning_steps 768
+ Retrying in 1 seconds
+episode 96 score -9.1 avg score -9.1 time_steps 15520 learning_steps 776
+ Retrying in 1 seconds
+episode 97 score -9.1 avg score -9.1 time_steps 15680 learning_steps 784
+ Retrying in 1 seconds
+episode 98 score -9.1 avg score -9.1 time_steps 15840 learning_steps 792
+ Retrying in 1 seconds
+episode 99 score -9.1 avg score -9.1 time_steps 16000 learning_steps 800
+ Retrying in 1 seconds
+episode 100 score -9.1 avg score -9.1 time_steps 16160 learning_steps 808
+ Retrying in 1 seconds
+episode 101 score -9.1 avg score -9.1 time_steps 16320 learning_steps 816
+ Retrying in 1 seconds
+episode 102 score -9.1 avg score -9.1 time_steps 16480 learning_steps 824
+ Retrying in 1 seconds
+episode 103 score -9.1 avg score -9.1 time_steps 16640 learning_steps 832
+ Retrying in 1 seconds
+episode 104 score -9.1 avg score -9.1 time_steps 16800 learning_steps 840
+ Retrying in 1 seconds
+episode 105 score -9.1 avg score -9.1 time_steps 16960 learning_steps 848
+ Retrying in 1 seconds
+episode 106 score -9.1 avg score -9.1 time_steps 17120 learning_steps 856
+ Retrying in 1 seconds
+episode 107 score -9.1 avg score -9.1 time_steps 17280 learning_steps 864
+ Retrying in 1 seconds
+episode 108 score -9.1 avg score -9.1 time_steps 17440 learning_steps 872
+ Retrying in 1 seconds
+episode 109 score -9.1 avg score -9.1 time_steps 17600 learning_steps 880
+ Retrying in 1 seconds
+episode 110 score -9.1 avg score -9.1 time_steps 17760 learning_steps 888
+ Retrying in 1 seconds
+episode 111 score -9.1 avg score -9.1 time_steps 17920 learning_steps 896
+ Retrying in 1 seconds
+episode 112 score -9.1 avg score -9.1 time_steps 18080 learning_steps 904
+ Retrying in 1 seconds
+episode 113 score -9.1 avg score -9.1 time_steps 18240 learning_steps 912
+ Retrying in 1 seconds
+episode 114 score -9.1 avg score -9.1 time_steps 18400 learning_steps 920
+ Retrying in 1 seconds
+episode 115 score -9.1 avg score -9.1 time_steps 18560 learning_steps 928
+ Retrying in 1 seconds
+episode 116 score -9.1 avg score -9.1 time_steps 18720 learning_steps 936
+ Retrying in 1 seconds
+episode 117 score -9.1 avg score -9.1 time_steps 18880 learning_steps 944
+ Retrying in 1 seconds
+episode 118 score -9.1 avg score -9.1 time_steps 19040 learning_steps 952
+ Retrying in 1 seconds
+episode 119 score -9.1 avg score -9.1 time_steps 19200 learning_steps 960
+ Retrying in 1 seconds
+episode 120 score -9.1 avg score -9.1 time_steps 19360 learning_steps 968
+ Retrying in 1 seconds
+episode 121 score -9.1 avg score -9.1 time_steps 19520 learning_steps 976
+ Retrying in 1 seconds
+episode 122 score -9.1 avg score -9.1 time_steps 19680 learning_steps 984
+ Retrying in 1 seconds
+episode 123 score -9.1 avg score -9.1 time_steps 19840 learning_steps 992
+ Retrying in 1 seconds
+episode 124 score -9.1 avg score -9.1 time_steps 20000 learning_steps 1000
+ Retrying in 1 seconds
+episode 125 score -9.1 avg score -9.1 time_steps 20160 learning_steps 1008
+ Retrying in 1 seconds
+episode 126 score -9.1 avg score -9.1 time_steps 20320 learning_steps 1016
+ Retrying in 1 seconds
+episode 127 score -9.1 avg score -9.1 time_steps 20480 learning_steps 1024
+ Retrying in 1 seconds
+episode 128 score -9.1 avg score -9.1 time_steps 20640 learning_steps 1032
+ Retrying in 1 seconds
+episode 129 score -9.1 avg score -9.1 time_steps 20800 learning_steps 1040
+ Retrying in 1 seconds
+episode 130 score -9.1 avg score -9.1 time_steps 20960 learning_steps 1048
+ Retrying in 1 seconds
+episode 131 score -9.1 avg score -9.1 time_steps 21120 learning_steps 1056
+ Retrying in 1 seconds
+episode 132 score -9.1 avg score -9.1 time_steps 21280 learning_steps 1064
+ Retrying in 1 seconds
+episode 133 score -9.1 avg score -9.1 time_steps 21440 learning_steps 1072
+ Retrying in 1 seconds
+episode 134 score -9.1 avg score -9.1 time_steps 21600 learning_steps 1080
+ Retrying in 1 seconds
+episode 135 score -9.1 avg score -9.1 time_steps 21760 learning_steps 1088
+ Retrying in 1 seconds
+episode 136 score -9.1 avg score -9.1 time_steps 21920 learning_steps 1096
+ Retrying in 1 seconds
+episode 137 score -9.1 avg score -9.1 time_steps 22080 learning_steps 1104
+ Retrying in 1 seconds
+episode 138 score -9.1 avg score -9.1 time_steps 22240 learning_steps 1112
+ Retrying in 1 seconds
+episode 139 score -9.1 avg score -9.1 time_steps 22400 learning_steps 1120
+ Retrying in 1 seconds
+episode 140 score -9.1 avg score -9.1 time_steps 22560 learning_steps 1128
+ Retrying in 1 seconds
+episode 141 score -9.1 avg score -9.1 time_steps 22720 learning_steps 1136
+ Retrying in 1 seconds
+episode 142 score -9.1 avg score -9.1 time_steps 22880 learning_steps 1144
+ Retrying in 1 seconds
+episode 143 score -9.1 avg score -9.1 time_steps 23040 learning_steps 1152
+ Retrying in 1 seconds
+episode 144 score -9.1 avg score -9.1 time_steps 23200 learning_steps 1160
+ Retrying in 1 seconds
+episode 145 score -9.1 avg score -9.1 time_steps 23360 learning_steps 1168
+ Retrying in 1 seconds
+episode 146 score -9.1 avg score -9.1 time_steps 23520 learning_steps 1176
+ Retrying in 1 seconds
+episode 147 score -9.1 avg score -9.1 time_steps 23680 learning_steps 1184
+ Retrying in 1 seconds
+episode 148 score -9.1 avg score -9.1 time_steps 23840 learning_steps 1192
+ Retrying in 1 seconds
+episode 149 score -9.1 avg score -9.1 time_steps 24000 learning_steps 1200
+ Retrying in 1 seconds
+episode 150 score -9.1 avg score -9.1 time_steps 24160 learning_steps 1208
+ Retrying in 1 seconds
+episode 151 score -9.1 avg score -9.1 time_steps 24320 learning_steps 1216
+ Retrying in 1 seconds
+episode 152 score -9.1 avg score -9.1 time_steps 24480 learning_steps 1224
+ Retrying in 1 seconds
+episode 153 score -9.1 avg score -9.1 time_steps 24640 learning_steps 1232
+ Retrying in 1 seconds
+episode 154 score -9.1 avg score -9.1 time_steps 24800 learning_steps 1240
+ Retrying in 1 seconds
+episode 155 score -9.1 avg score -9.1 time_steps 24960 learning_steps 1248
+ Retrying in 1 seconds
+episode 156 score -9.1 avg score -9.1 time_steps 25120 learning_steps 1256
+ Retrying in 1 seconds
+episode 157 score -9.1 avg score -9.1 time_steps 25280 learning_steps 1264
+ Retrying in 1 seconds
+episode 158 score -9.1 avg score -9.1 time_steps 25440 learning_steps 1272
+ Retrying in 1 seconds
+episode 159 score -9.1 avg score -9.1 time_steps 25600 learning_steps 1280
+ Retrying in 1 seconds
+episode 160 score -9.1 avg score -9.1 time_steps 25760 learning_steps 1288
+ Retrying in 1 seconds
+episode 161 score -9.1 avg score -9.1 time_steps 25920 learning_steps 1296
+ Retrying in 1 seconds
+episode 162 score -9.1 avg score -9.1 time_steps 26080 learning_steps 1304
+ Retrying in 1 seconds
+episode 163 score -9.1 avg score -9.1 time_steps 26240 learning_steps 1312
+ Retrying in 1 seconds
+episode 164 score -9.1 avg score -9.1 time_steps 26400 learning_steps 1320
+ Retrying in 1 seconds
+episode 165 score -9.1 avg score -9.1 time_steps 26560 learning_steps 1328
+ Retrying in 1 seconds
+episode 166 score -9.1 avg score -9.1 time_steps 26720 learning_steps 1336
+ Retrying in 1 seconds
+episode 167 score -9.1 avg score -9.1 time_steps 26880 learning_steps 1344
+ Retrying in 1 seconds
+episode 168 score -9.1 avg score -9.1 time_steps 27040 learning_steps 1352
+ Retrying in 1 seconds
+episode 169 score -9.1 avg score -9.1 time_steps 27200 learning_steps 1360
+ Retrying in 1 seconds
+episode 170 score -9.1 avg score -9.1 time_steps 27360 learning_steps 1368
+ Retrying in 1 seconds
+episode 171 score -9.1 avg score -9.1 time_steps 27520 learning_steps 1376
+ Retrying in 1 seconds
+episode 172 score -9.1 avg score -9.1 time_steps 27680 learning_steps 1384
+ Retrying in 1 seconds
+episode 173 score -9.1 avg score -9.1 time_steps 27840 learning_steps 1392
+ Retrying in 1 seconds
+episode 174 score -9.1 avg score -9.1 time_steps 28000 learning_steps 1400
+ Retrying in 1 seconds
+episode 175 score -9.1 avg score -9.1 time_steps 28160 learning_steps 1408
+ Retrying in 1 seconds
+episode 176 score -9.1 avg score -9.1 time_steps 28320 learning_steps 1416
+ Retrying in 1 seconds
+episode 177 score -9.1 avg score -9.1 time_steps 28480 learning_steps 1424
+ Retrying in 1 seconds
+episode 178 score -9.1 avg score -9.1 time_steps 28640 learning_steps 1432
+ Retrying in 1 seconds
+episode 179 score -9.1 avg score -9.1 time_steps 28800 learning_steps 1440
+ Retrying in 1 seconds
+episode 180 score -9.1 avg score -9.1 time_steps 28960 learning_steps 1448
+ Retrying in 1 seconds
+episode 181 score -9.1 avg score -9.1 time_steps 29120 learning_steps 1456
+ Retrying in 1 seconds
+episode 182 score -9.1 avg score -9.1 time_steps 29280 learning_steps 1464
+ Retrying in 1 seconds
+episode 183 score -9.1 avg score -9.1 time_steps 29440 learning_steps 1472
+ Retrying in 1 seconds
+episode 184 score -9.1 avg score -9.1 time_steps 29600 learning_steps 1480
+ Retrying in 1 seconds
+episode 185 score -9.1 avg score -9.1 time_steps 29760 learning_steps 1488
+ Retrying in 1 seconds
+episode 186 score -9.1 avg score -9.1 time_steps 29920 learning_steps 1496
+ Retrying in 1 seconds
+episode 187 score -9.1 avg score -9.1 time_steps 30080 learning_steps 1504
+ Retrying in 1 seconds
+episode 188 score -9.1 avg score -9.1 time_steps 30240 learning_steps 1512
+ Retrying in 1 seconds
+episode 189 score -9.1 avg score -9.1 time_steps 30400 learning_steps 1520
+ Retrying in 1 seconds
+episode 190 score -9.1 avg score -9.1 time_steps 30560 learning_steps 1528
+ Retrying in 1 seconds
+episode 191 score -9.1 avg score -9.1 time_steps 30720 learning_steps 1536
+ Retrying in 1 seconds
+episode 192 score -9.1 avg score -9.1 time_steps 30880 learning_steps 1544
+ Retrying in 1 seconds
+episode 193 score -9.1 avg score -9.1 time_steps 31040 learning_steps 1552
+ Retrying in 1 seconds
+episode 194 score -9.1 avg score -9.1 time_steps 31200 learning_steps 1560
+ Retrying in 1 seconds
+episode 195 score -9.1 avg score -9.1 time_steps 31360 learning_steps 1568
+ Retrying in 1 seconds
+episode 196 score -9.1 avg score -9.1 time_steps 31520 learning_steps 1576
+ Retrying in 1 seconds
+episode 197 score -9.1 avg score -9.1 time_steps 31680 learning_steps 1584
+ Retrying in 1 seconds
+episode 198 score -9.1 avg score -9.1 time_steps 31840 learning_steps 1592
+ Retrying in 1 seconds
+episode 199 score -9.1 avg score -9.1 time_steps 32000 learning_steps 1600
+ Retrying in 1 seconds
+episode 200 score -9.1 avg score -9.1 time_steps 32160 learning_steps 1608
+ Retrying in 1 seconds
+episode 201 score -9.1 avg score -9.1 time_steps 32320 learning_steps 1616
+ Retrying in 1 seconds
+episode 202 score -9.1 avg score -9.1 time_steps 32480 learning_steps 1624
+ Retrying in 1 seconds
+episode 203 score -9.1 avg score -9.1 time_steps 32640 learning_steps 1632
+ Retrying in 1 seconds
+episode 204 score -9.1 avg score -9.1 time_steps 32800 learning_steps 1640
+ Retrying in 1 seconds
+episode 205 score -9.1 avg score -9.1 time_steps 32960 learning_steps 1648
+ Retrying in 1 seconds
+episode 206 score -9.1 avg score -9.1 time_steps 33120 learning_steps 1656
+ Retrying in 1 seconds
+episode 207 score -9.1 avg score -9.1 time_steps 33280 learning_steps 1664
+ Retrying in 1 seconds
+episode 208 score -9.1 avg score -9.1 time_steps 33440 learning_steps 1672
+ Retrying in 1 seconds
+episode 209 score -9.1 avg score -9.1 time_steps 33600 learning_steps 1680
+ Retrying in 1 seconds
+episode 210 score -9.1 avg score -9.1 time_steps 33760 learning_steps 1688
+ Retrying in 1 seconds
+episode 211 score -9.1 avg score -9.1 time_steps 33920 learning_steps 1696
+ Retrying in 1 seconds
+episode 212 score -9.1 avg score -9.1 time_steps 34080 learning_steps 1704
+ Retrying in 1 seconds
+episode 213 score -9.1 avg score -9.1 time_steps 34240 learning_steps 1712
+ Retrying in 1 seconds
+episode 214 score -9.1 avg score -9.1 time_steps 34400 learning_steps 1720
+ Retrying in 1 seconds
+episode 215 score -9.1 avg score -9.1 time_steps 34560 learning_steps 1728
+ Retrying in 1 seconds
+episode 216 score -9.1 avg score -9.1 time_steps 34720 learning_steps 1736
+ Retrying in 1 seconds
+episode 217 score -9.1 avg score -9.1 time_steps 34880 learning_steps 1744
+ Retrying in 1 seconds
+episode 218 score -9.1 avg score -9.1 time_steps 35040 learning_steps 1752
+ Retrying in 1 seconds
+episode 219 score -9.1 avg score -9.1 time_steps 35200 learning_steps 1760
+ Retrying in 1 seconds
+episode 220 score -9.1 avg score -9.1 time_steps 35360 learning_steps 1768
+ Retrying in 1 seconds
+episode 221 score -9.1 avg score -9.1 time_steps 35520 learning_steps 1776
+ Retrying in 1 seconds
+episode 222 score -9.1 avg score -9.1 time_steps 35680 learning_steps 1784
+ Retrying in 1 seconds
+episode 223 score -9.1 avg score -9.1 time_steps 35840 learning_steps 1792
+ Retrying in 1 seconds
+episode 224 score -9.1 avg score -9.1 time_steps 36000 learning_steps 1800
+ Retrying in 1 seconds
+episode 225 score -9.1 avg score -9.1 time_steps 36160 learning_steps 1808
+ Retrying in 1 seconds
+episode 226 score -9.1 avg score -9.1 time_steps 36320 learning_steps 1816
+ Retrying in 1 seconds
+episode 227 score -9.1 avg score -9.1 time_steps 36480 learning_steps 1824
+ Retrying in 1 seconds
+episode 228 score -9.1 avg score -9.1 time_steps 36640 learning_steps 1832
+ Retrying in 1 seconds
+episode 229 score -9.1 avg score -9.1 time_steps 36800 learning_steps 1840
+ Retrying in 1 seconds
+episode 230 score -9.1 avg score -9.1 time_steps 36960 learning_steps 1848
+ Retrying in 1 seconds
+episode 231 score -9.1 avg score -9.1 time_steps 37120 learning_steps 1856
+ Retrying in 1 seconds
+episode 232 score -9.1 avg score -9.1 time_steps 37280 learning_steps 1864
+ Retrying in 1 seconds
+episode 233 score -9.1 avg score -9.1 time_steps 37440 learning_steps 1872
+ Retrying in 1 seconds
+episode 234 score -9.1 avg score -9.1 time_steps 37600 learning_steps 1880
+ Retrying in 1 seconds
+episode 235 score -9.1 avg score -9.1 time_steps 37760 learning_steps 1888
+ Retrying in 1 seconds
+episode 236 score -9.1 avg score -9.1 time_steps 37920 learning_steps 1896
+ Retrying in 1 seconds
+episode 237 score -9.1 avg score -9.1 time_steps 38080 learning_steps 1904
+ Retrying in 1 seconds
+episode 238 score -9.1 avg score -9.1 time_steps 38240 learning_steps 1912
+ Retrying in 1 seconds
+episode 239 score -9.1 avg score -9.1 time_steps 38400 learning_steps 1920
+ Retrying in 1 seconds
+episode 240 score -9.1 avg score -9.1 time_steps 38560 learning_steps 1928
+ Retrying in 1 seconds
+episode 241 score -9.1 avg score -9.1 time_steps 38720 learning_steps 1936
+ Retrying in 1 seconds
+episode 242 score -9.1 avg score -9.1 time_steps 38880 learning_steps 1944
+ Retrying in 1 seconds
+episode 243 score -9.1 avg score -9.1 time_steps 39040 learning_steps 1952
+ Retrying in 1 seconds
+episode 244 score -9.1 avg score -9.1 time_steps 39200 learning_steps 1960
+ Retrying in 1 seconds
+episode 245 score -9.1 avg score -9.1 time_steps 39360 learning_steps 1968
+ Retrying in 1 seconds
+episode 246 score -9.1 avg score -9.1 time_steps 39520 learning_steps 1976
+ Retrying in 1 seconds
+episode 247 score -9.1 avg score -9.1 time_steps 39680 learning_steps 1984
+ Retrying in 1 seconds
+episode 248 score -9.1 avg score -9.1 time_steps 39840 learning_steps 1992
+ Retrying in 1 seconds
+episode 249 score -9.1 avg score -9.1 time_steps 40000 learning_steps 2000
+ Retrying in 1 seconds
+episode 250 score -9.1 avg score -9.1 time_steps 40160 learning_steps 2008
+ Retrying in 1 seconds
+episode 251 score -9.1 avg score -9.1 time_steps 40320 learning_steps 2016
+ Retrying in 1 seconds
+episode 252 score -9.1 avg score -9.1 time_steps 40480 learning_steps 2024
+ Retrying in 1 seconds
+episode 253 score -9.1 avg score -9.1 time_steps 40640 learning_steps 2032
+ Retrying in 1 seconds
+episode 254 score -9.1 avg score -9.1 time_steps 40800 learning_steps 2040
+ Retrying in 1 seconds
+episode 255 score -9.1 avg score -9.1 time_steps 40960 learning_steps 2048
+ Retrying in 1 seconds
+episode 256 score -9.1 avg score -9.1 time_steps 41120 learning_steps 2056
+ Retrying in 1 seconds
+episode 257 score -9.1 avg score -9.1 time_steps 41280 learning_steps 2064
+ Retrying in 1 seconds
+episode 258 score -9.1 avg score -9.1 time_steps 41440 learning_steps 2072
+ Retrying in 1 seconds
+episode 259 score -9.1 avg score -9.1 time_steps 41600 learning_steps 2080
+ Retrying in 1 seconds
+episode 260 score -9.1 avg score -9.1 time_steps 41760 learning_steps 2088
+ Retrying in 1 seconds
+episode 261 score -9.1 avg score -9.1 time_steps 41920 learning_steps 2096
+ Retrying in 1 seconds
+episode 262 score -9.1 avg score -9.1 time_steps 42080 learning_steps 2104
+ Retrying in 1 seconds
+episode 263 score -9.1 avg score -9.1 time_steps 42240 learning_steps 2112
+ Retrying in 1 seconds
+episode 264 score -9.1 avg score -9.1 time_steps 42400 learning_steps 2120
+ Retrying in 1 seconds
+episode 265 score -9.1 avg score -9.1 time_steps 42560 learning_steps 2128
+ Retrying in 1 seconds
+episode 266 score -9.1 avg score -9.1 time_steps 42720 learning_steps 2136
+ Retrying in 1 seconds
+episode 267 score -9.1 avg score -9.1 time_steps 42880 learning_steps 2144
+ Retrying in 1 seconds
+episode 268 score -9.1 avg score -9.1 time_steps 43040 learning_steps 2152
+ Retrying in 1 seconds
+episode 269 score -9.1 avg score -9.1 time_steps 43200 learning_steps 2160
+ Retrying in 1 seconds
+episode 270 score -9.1 avg score -9.1 time_steps 43360 learning_steps 2168
+ Retrying in 1 seconds
+episode 271 score -9.1 avg score -9.1 time_steps 43520 learning_steps 2176
+ Retrying in 1 seconds
+episode 272 score -9.1 avg score -9.1 time_steps 43680 learning_steps 2184
+ Retrying in 1 seconds
+episode 273 score -9.1 avg score -9.1 time_steps 43840 learning_steps 2192
+ Retrying in 1 seconds
+episode 274 score -9.1 avg score -9.1 time_steps 44000 learning_steps 2200
+ Retrying in 1 seconds
+episode 275 score -9.1 avg score -9.1 time_steps 44160 learning_steps 2208
+ Retrying in 1 seconds
+episode 276 score -9.1 avg score -9.1 time_steps 44320 learning_steps 2216
+ Retrying in 1 seconds
+episode 277 score -9.1 avg score -9.1 time_steps 44480 learning_steps 2224
+ Retrying in 1 seconds
+episode 278 score -9.1 avg score -9.1 time_steps 44640 learning_steps 2232
+ Retrying in 1 seconds
+episode 279 score -9.1 avg score -9.1 time_steps 44800 learning_steps 2240
+ Retrying in 1 seconds
+episode 280 score -9.1 avg score -9.1 time_steps 44960 learning_steps 2248
+ Retrying in 1 seconds
+episode 281 score -9.1 avg score -9.1 time_steps 45120 learning_steps 2256
+ Retrying in 1 seconds
+episode 282 score -9.1 avg score -9.1 time_steps 45280 learning_steps 2264
+ Retrying in 1 seconds
+episode 283 score -9.1 avg score -9.1 time_steps 45440 learning_steps 2272
+ Retrying in 1 seconds
+episode 284 score -9.1 avg score -9.1 time_steps 45600 learning_steps 2280
+ Retrying in 1 seconds
+episode 285 score -9.1 avg score -9.1 time_steps 45760 learning_steps 2288
+ Retrying in 1 seconds
+episode 286 score -9.1 avg score -9.1 time_steps 45920 learning_steps 2296
+ Retrying in 1 seconds
+episode 287 score -9.1 avg score -9.1 time_steps 46080 learning_steps 2304
+ Retrying in 1 seconds
+episode 288 score -9.1 avg score -9.1 time_steps 46240 learning_steps 2312
+ Retrying in 1 seconds
+episode 289 score -9.1 avg score -9.1 time_steps 46400 learning_steps 2320
+ Retrying in 1 seconds
+episode 290 score -9.1 avg score -9.1 time_steps 46560 learning_steps 2328
+ Retrying in 1 seconds
+episode 291 score -9.1 avg score -9.1 time_steps 46720 learning_steps 2336
+ Retrying in 1 seconds
+episode 292 score -9.1 avg score -9.1 time_steps 46880 learning_steps 2344
+ Retrying in 1 seconds
+episode 293 score -9.1 avg score -9.1 time_steps 47040 learning_steps 2352
+ Retrying in 1 seconds
+episode 294 score -9.1 avg score -9.1 time_steps 47200 learning_steps 2360
+ Retrying in 1 seconds
+episode 295 score -9.1 avg score -9.1 time_steps 47360 learning_steps 2368
+ Retrying in 1 seconds
+episode 296 score -9.1 avg score -9.1 time_steps 47520 learning_steps 2376
+ Retrying in 1 seconds
+episode 297 score -9.1 avg score -9.1 time_steps 47680 learning_steps 2384
+ Retrying in 1 seconds
+episode 298 score -9.1 avg score -9.1 time_steps 47840 learning_steps 2392
+ Retrying in 1 seconds
+episode 299 score -9.1 avg score -9.1 time_steps 48000 learning_steps 2400

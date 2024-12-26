@@ -8,6 +8,10 @@ from ppo import Agent
 from sumo_env import SumoEnv
 import sys
 import logging
+from torch.utils.tensorboard import SummaryWriter
+import torch
+
+writer = SummaryWriter('log_dir') # create a tensorboard writer
 
 
 def plot_learning_curve(x, scores, figure_file):
@@ -26,12 +30,13 @@ env = gym.make('SumoEnv-v0') # create an environment
 
 ########### Hipper parameters ###########
 N = 20 # learning frequency
-batch_size = 5 
-n_epochs = 4
-alpha = 0.0003 # learning rate
+batch_size = 64
+n_epochs = 10
+alpha = 3e-4 # learning rate
 policy_clip = 0.2 # PPO clip parameter
 lamda = 0.95 # GAE, Generalized Advantage Estimation
 gamma = 0.99 # discount factor
+capacity = 5e5 # memory capacity
 ##########################################
 agent = Agent(state_dim=env.observation_space.shape,
               action_dim=env.action_space.n, 
@@ -40,8 +45,9 @@ agent = Agent(state_dim=env.observation_space.shape,
               policy_clip=policy_clip,
               gamma=gamma,
               lamda=lamda, 
-              adam_lr=alpha)
-n_games = 300
+              adam_lr=alpha,
+              capacity=capacity)
+n_games = 60
 figure_file = 'leraning_curve.png'
 best_score = env.reward_range[0]
 score_history = []
@@ -60,18 +66,23 @@ for i in range(n_games):
         n_steps += 1
         score += reward
         agent.store_data(current_state, action, prob, val, reward, done)
-        if n_steps % N == 0:
-            agent.learn()
-            learn_iters += 1
+        #if n_steps % N == 0:
+        #    agent.learn()
+        #    learn_iters += 1
         current_state = next_state
+        # maybe save the model here- the difference is that here it saves the model every 20 steps
     score_history.append(score)
     avg_score = np.mean(score_history[-100:]) # calculate the average score of the last 100 episodes
-    if avg_score > best_score: # save the best model
-        best_score = avg_score 
-        agent.save_models()
+    #if avg_score > best_score: # save the best model
+    #    best_score = avg_score 
+    agent.save_models() # save the model after each episode, saving here might cause to model to not learn well
+    writer.add_scalar('Performance/Reward', score, i) # log the reward to tensorboard
     print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
             'time_steps', n_steps, 'learning_steps', learn_iters)
     env.close()
+    if i % 3 == 0:
+        agent.learn()
+        learn_iters += 1
     
     
 x = [i+1 for i in range(len(score_history))]

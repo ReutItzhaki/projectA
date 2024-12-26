@@ -9,13 +9,34 @@ from sumolib import checkBinary
 
 
 class SumoEnv(gym.Env):
-    
+    """
+    Initializes the SumoEnv environment.
+    Attributes:
+        action_space (gym.spaces.Discrete): Discrete action space for the environment.
+        observation_space (gym.spaces.Box): Observation space representing the state of the environment.
+        control_cycle (int): Number of simulation steps to run for each action.
+        render_mode (str): Mode for rendering the environment (e.g., 'sumo' or 'sumo-gui').
+        traci_connected (bool): Flag to indicate if the environment is connected to SUMO.
+        device (str): Device to run the environment on (e.g., 'cpu' or 'cuda').
+        simulation_mode (str): Mode for running the SUMO simulation (e.g., 'sumo' or 'sumo-gui').
+        step_count (int): Number of steps taken in the environment.
+        sumoBinary (str): Path to the SUMO binary.
+        sumo_simulation (list): List of arguments for running the SUMO simulation.
+        zones (dict): Dictionary of zones in the environment.
+        max_steps (int): Maximum number of steps in the environment.
+        vehicle_max_count (int): Maximum number of vehicles in the environment.
+        speed_max (int): Maximum speed of vehicles in the environment.
+    """
     def __init__(self, device = 'cpu'):
         super().__init__()
-        self.n_observations = 28
-        self.n_actions = 24
-        self.observation_space = spaces.Box(low=np.array([0.0]*28, dtype=np.float32), high=np.array([1.0]*28, dtype=np.float32), dtype=np.float32) 
-        self.action_space = spaces.MultiBinary(self.n_actions)
+        self.n_observations = 8 
+        #self.n_actions = 24
+        # the observation space is a box with 8 values, 4 for the number of vehicles in each protected region and 4 for the avarege speed of the vehicles in each one of the protected regions
+        self.observation_space = spaces.Box(low=0, high=1, shape=(self.n_observations,), dtype=np.float32)
+        #self.observation_space = spaces.Box(low=np.array([0.0]*28, dtype=np.float32), high=np.array([1.0]*28, dtype=np.float32), dtype=np.float32) 
+        # the action space is discrete with 1 action- open or close the traffic ligths at the perimeter 
+        self.action_space = spaces.Discrete(1)
+        #self.action_space = spaces.MultiBinary(self.n_actions)
         self.control_cycle = 50
         self.render_mode = None 
         self.traci_connected = False
@@ -53,12 +74,22 @@ class SumoEnv(gym.Env):
                             "d81", "d82", "d83", "d84", "d85", "d86", "d87", "d88", "d89", "E22", "E24", "E26",
                             "E16", "E18", "E20")
         }
+        self.max_steps = 160 # the maximum number of steps is 160
+        self.vehicle_max_count = 1200 # the maximum number of vehicles is 1200
+        self.speed_max = 16 # the maximum speed is 16
         
     def count_vehicles_in_zone(self, zone_id):
+        # count the number of vehicles in a zone
         count = 0
         for edges in self.zones[f"zone_{zone_id}"]:
             count += traci.edge.getLastStepVehicleNumber(edgeID=edges) + traci.edge.getLastStepVehicleNumber(edgeID=f"-{edges}")
         return count
+    
+    def mean_speed_of_zone(self, zone_id):
+        # calculate the mean speed of vehicles in a zone
+        speeds = [traci.edge.getLastStepMeanSpeed(edgeID=edge) for edge in self.zones[f"zone_{zone_id}"]]
+        return np.mean(speeds)  
+    
     def _getinfo(self):
         info = {
             "info": None
@@ -67,6 +98,7 @@ class SumoEnv(gym.Env):
 
 
     def reset(self, seed=None, options=None):
+        # Reset the simulation to its initial state
         super().reset(seed=seed)
          # Check if there is an existing traci connection
         if self.traci_connected:
@@ -77,7 +109,7 @@ class SumoEnv(gym.Env):
         traci.start(self.sumo_simulation)
         self.traci_connected = True
         info = self._getinfo()
-        observation = np.zeros(28, dtype=np.float32)
+        observation = np.zeros(8, dtype=np.float32)
         self.step_count = 0        
         return observation, info
     
@@ -87,40 +119,45 @@ class SumoEnv(gym.Env):
 
         terminated = False
         self.step_count += 1
-        for i in range(24):
-            if (action[i] == 1):
+        for i in range(24): # for each traffic light
+            if (action == 1): # set the traffic light to red
                 phase = 0
-            else:
+            else: # set the traffic light to green
                 phase = 2
             traci.trafficlight.setPhase(f"t{i+1}", phase)
 
-        for i in range(self.control_cycle):
+        for i in range(self.control_cycle): # Run the simulation for 50 steps
             traci.simulation.step()
-            if(not sim.getMinExpectedNumber()):
+            if(not sim.getMinExpectedNumber()):# Check if there are no vehicles in the simulation
                 terminated = True
                 break
 
-        feeder_densities = np.zeros(24, dtype=np.float32)
-        for i in range (24):
-            feeder_densities[i] = traci.edge.getLastStepVehicleNumber(edgeID=f"f{i+1}")
-            if(feeder_densities[i] > 800):
-                feeder_densities[i] = 800    
-
         protected_region_densities = np.zeros(4, dtype=np.float32)
-        for i in range(4):
+        protected_region_mean_speeds = np.zeros(4, dtype=np.float32) 
+        for i in range(4): # in each protected region, i from 0 to 3 (regions 1 to 4)
             protected_region_densities[i] = self.count_vehicles_in_zone(i+1)
             if(protected_region_densities[i] > 1200):
                 protected_region_densities[i] = 1200
 
-        feeder_densities = feeder_densities / 800
-        protected_region_densities = protected_region_densities / 1200
+            protected_region_mean_speeds[i] = self.mean_speed_of_zone(i+1)
+            if(protected_region_mean_speeds[i] > self.speed_max):
+                protected_region_mean_speeds[i] = self.speed_max
+
+        protected_region_densities = protected_region_densities / self.vehicle_max_count # Normalize the densities
+        protected_region_mean_speeds = protected_region_mean_speeds / self.speed_max # Normalize the speeds
+
 
         info = self._getinfo()
-        observation = np.concatenate([protected_region_densities, feeder_densities])
-        reward = -(vcl.getIDCount())
-        reward = float(reward)
-        reward /= 5000        
-        if (self.step_count == 160):
+        observation = np.concatenate([protected_region_densities, protected_region_mean_speeds])
+        
+        # Penalize higher vehicle count
+        vehicle_count_penalty = -(vcl.getIDCount()) / 5000.0
+        # give higher reward for higher speed
+        speed_penalty = np.sum(protected_region_mean_speeds) / 4
+        # the reward is the sum of the vehicle count penalty and the speed penalty
+        reward = vehicle_count_penalty + speed_penalty
+        
+        if (self.step_count == self.max_steps):
             terminated = True
 
         return observation, reward, terminated, False, info
@@ -130,8 +167,6 @@ class SumoEnv(gym.Env):
             traci.close()
             self.traci_connected = False
         return super().close()
-
-# def render???
 
 from gymnasium.envs.registration import register
 

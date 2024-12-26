@@ -16,13 +16,14 @@ class PPOMemory():
     """
     Memory for PPO
     """
-    def  __init__(self, batch_size):
+    def  __init__(self, batch_size, capacity):
         self.states = []
         self.actions= []
         self.action_probs = []
         self.rewards = []
         self.vals = []
         self.dones = []
+        self.capacity = capacity
         
         self.batch_size = batch_size
 
@@ -48,6 +49,15 @@ class PPOMemory():
     
 
     def store_memory(self,state,action,action_prob,val,reward,done):
+        #if there is not enough memory, remove the first element
+        if len(self.states) >= self.capacity:
+            self.states.pop(0)
+            self.actions.pop(0)
+            self.action_probs.pop(0)
+            self.rewards.pop(0)
+            self.vals.pop(0)
+            self.dones.pop(0)
+
         self.states.append(state)
         self.actions.append(action)
         self.action_probs.append(action_prob)
@@ -149,7 +159,7 @@ class CriticNwk(nn.Module):
 
 class Agent():
     def __init__(self, gamma, policy_clip,lamda, adam_lr,
-                 n_epochs, batch_size, state_dim, action_dim):
+                 n_epochs, batch_size, state_dim, action_dim, capacity ):
         
         self.gamma = gamma 
         self.policy_clip = policy_clip
@@ -158,7 +168,7 @@ class Agent():
 
         self.actor = ActorNwk(input_dim=state_dim,out_dim=action_dim,adam_lr=adam_lr,chekpoint_file='tmp/actor')
         self.critic = CriticNwk(input_dim=state_dim,adam_lr=adam_lr,chekpoint_file='tmp/ctitic')
-        self.memory = PPOMemory(batch_size)
+        self.memory = PPOMemory(batch_size, capacity)
 
     def store_data(self,state,action,action_prob,val,reward,done):
         self.memory.store_memory(state,action,action_prob,val,reward,done)
@@ -190,13 +200,13 @@ class Agent():
         return action, probs, value
     
     def calculate_advanatage(self,reward_arr,value_arr,dones_arr):
-        time_steps = len(reward_arr)
+        time_steps = len(reward_arr) # number of time steps is equal to the length of the reward array
         advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
-        for t in range(0,time_steps-1):
+        for t in range(0,time_steps-1): # for each reward
             discount = 1
             running_advantage = 0
-            for k in range(t,time_steps-1):
+            for k in range(t,time_steps-1): 
                 if int(dones_arr[k]) == 1:
                     running_advantage += reward_arr[k] - value_arr[k]
                 else:
@@ -237,7 +247,7 @@ class Agent():
                 #prob_ratio = (new_probs - old_probs).exp()
                 weighted_probs = advantage_arr[batch] * prob_ratio
                 weighted_clipped_probs = torch.clamp(prob_ratio, 1-self.policy_clip,
-                        1+self.policy_clip)*advantage_arr[batch]
+                        1+self.policy_clip)*advantage_arr[batch] # clipped version of weighted_probs using policy_clip
                 actor_loss = -torch.min(weighted_probs, weighted_clipped_probs).mean()
 
                 returns = advantage_arr[batch] + values[batch]
