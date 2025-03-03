@@ -44,7 +44,7 @@ class SumoEnv(gym.Env):
         self.simulaition_mode = 'sumo' # change to 'sumo-gui' to open it graphically
         self.step_count = 0
         self.sumoBinary = checkBinary(self.simulaition_mode)
-        self.sumo_simulation = [self.sumoBinary, "-c", "SUMO_files/sim5.sumocfg", "--no-warnings", "--no-step-log", "--time-to-teleport", "-1"]
+        self.sumo_simulation = [self.sumoBinary, "-c", "SUMO_files/sumoConfig2.sumocfg", "--no-warnings", "--no-step-log", "--time-to-teleport", "-1"]
         self.zones = {
                 # up-left
                 "zone_1": ("E0", "E1", "E7", "E8", "E383", "E321", "E301", "E302", "d1", "d2", "d3", "d4",
@@ -74,7 +74,7 @@ class SumoEnv(gym.Env):
                             "d81", "d82", "d83", "d84", "d85", "d86", "d87", "d88", "d89", "E22", "E24", "E26",
                             "E16", "E18", "E20")
         }
-        self.max_steps = 160 # the maximum number of steps is 160
+        #self.max_steps = 160 # the maximum number of steps is 160
         self.vehicle_max_count = 1200 # the maximum number of vehicles is 1200
         self.speed_max = 16 # the maximum speed is 16
         
@@ -116,7 +116,6 @@ class SumoEnv(gym.Env):
 
 
     def step(self, action):
-
         terminated = False
         self.step_count += 1
         for i in range(24): # for each traffic light
@@ -157,8 +156,8 @@ class SumoEnv(gym.Env):
         # the reward is the sum of the vehicle count penalty and the speed penalty
         reward = vehicle_count_penalty + speed_penalty
         
-        if (self.step_count == self.max_steps):
-            terminated = True
+        #if (self.step_count == self.max_steps):
+        #    terminated = True
 
         return observation, reward, terminated, False, info
 
