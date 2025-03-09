@@ -4,6 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions.bernoulli import Bernoulli
+from torch.distributions.normal import Normal
+import torch.nn.init as init
+
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -95,32 +98,36 @@ class ActorNwk(nn.Module):
     optimizer: The optimizer used for gradient descent.
     device (torch.device): The device for calculations (CPU/GPU).
     """
-    def __init__(self, n_actions, n_observations, lr, save_dir, num_cells=256):
+    def __init__(self, n_actions, n_observations, lr, save_dir, num_cells=64):
         super(ActorNwk, self).__init__()
 
         self.checkpoint_file = os.path.join(save_dir, 'policy_net15.pth')
         self.actor = nn.Sequential(
-                nn.Linear(n_observations, num_cells),
-                nn.ReLU(),
-                nn.Linear(num_cells, num_cells),
-                nn.ReLU(),
-                nn.Linear(num_cells, n_actions),
-                nn.Sigmoid()
+            nn.Linear(n_observations, 64),
+            nn.Tanh(),
+            nn.Linear(64, 64),
+            nn.Tanh(),
+            nn.Linear(64, 1) # output is a single number
         )
+        # initialize the weights of the network
+        for m in self.actor:
+            if isinstance(m, nn.Linear): # if the layer is a linear layer
+                init.xavier_normal_(m.weight, gain=1) # initialize the weights of the layer with xavier normal initialization
+                init.constant_(m.bias, 0)
+    
+        
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr) 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
 
-    def forward(self, observation):
-        # this is the exploration part of the algorithm: 
-        # the actor network is used to generate the probability distribution of the actions
-        # which is used to sample the action to take
-        # that way, we ansure that the agent is exploring the environment and
-        # not just choosing the action with the highest probability
-        probs = self.actor(observation) 
-        dist = Bernoulli(probs=probs)
-        
+    def forward(self, state_tensor):
+        """
+        Returns a Normal distribution with mean=mu, std=1.
+        We'll transform the *sample* later.
+        """
+        mu = self.actor(state_tensor)   # shape [batch,1], can be any real number
+        dist = Normal(mu, 1.0)         # fixed std=1
         return dist
 
     def save_model(self):
@@ -142,16 +149,16 @@ class CriticNwk(nn.Module):
     optimizer: The optimizer used for gradient descent.
     device (torch.device): The device for calculations (CPU/GPU).
     """
-    def __init__(self, n_observations, lr, save_dir, num_cells=256):
+    def __init__(self, n_observations, lr, save_dir, num_cells=64):
         super(CriticNwk, self).__init__()
 
         self.checkpoint_file = os.path.join(save_dir, 'value_net15.pth')
         self.critic = nn.Sequential(
-                nn.Linear(n_observations, num_cells),
-                nn.ReLU(),
-                nn.Linear(num_cells, num_cells),
-                nn.ReLU(),
-                nn.Linear(num_cells, 1)
+            nn.Linear(n_observations, 64),
+            nn.Tanh(),
+            nn.Linear(64, 64),
+            nn.Tanh(),
+            nn.Linear(64, 1)  # Value output
         )
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
@@ -188,21 +195,23 @@ class Agent:
     memory (Memory): The experience replay memory.
 
     Methods:
-    remember(observation, action, probs, vals, reward, done): Stores data in memory.
+    remember(observation, action, vals, reward, done): Stores data in memory.
     save_models(): Saves the actor and critic models.
     load_models(): Loads the actor and critic models.
     choose_action(observation): Chooses an action based on the observation.
     learn(): Trains the agent using stored memory.
     """
-    def __init__(self, n_actions, n_observations, save_dir, gamma=0.99, lr=3e-4, gae_lambda=0.95,
+    def __init__(self, n_actions, n_observations, save_dir, gamma=0.9, lr=0.01, gae_lambda=0.95,
             epsilon_clip=0.2, batch_size=64, n_epochs=10, capacity=5e5):
         self.gamma = gamma
-        self.epsilon_clip = epsilon_clip
+        self.lr=lr
         self.n_epochs = n_epochs
         self.gae_lambda = gae_lambda
+        self.epsilon_clip = epsilon_clip
         self.global_epoch = 0
         self.global_batch = 0
         self.n_actions = n_actions
+        self.capacity = capacity
         self.n_observations = n_observations
 
         self.actor = ActorNwk(n_actions, n_observations, lr, save_dir=save_dir)
@@ -223,22 +232,43 @@ class Agent:
         self.critic.load_model()
 
     def choose_action(self, observation):
+        """
+        1) forward -> Normal(mu, 1)
+        2) sample raw_x
+        3) transform: a = 50 + 250 * sigmoid(raw_x)
+        => final action in [50,300]
+        4) BUT we do not fix log_prob => mild mismatch
+        """
+        
         state = torch.tensor(observation, dtype=torch.float32).to(self.actor.device)
-        dist = self.actor(state) # get the bernoulli distribution of the actions from the actor network (due to exploration)
-        value = self.critic(state) # get the value from the critic network
-        action = dist.sample() # sample the action from the distribution
-        action = torch.squeeze(action)
-        log_probs = torch.squeeze(dist.log_prob(action))             
-        value = torch.squeeze(value).item()
+        
+        # 1) Dist = Normal(mu, 1)
+        dist = self.actor(state)  
+        
+        # 2) sample raw_x from that Normal
+        z_n = dist.sample()     # shape []
+        z= torch.sigmoid(z_n)
 
-        # Convert to numpy arrays
-        action_np = action.detach().cpu().numpy() #
-        log_probs_np = log_probs.detach().cpu().numpy()
-        return action_np, log_probs_np, value
+        # 3) transform => final action in [50..300]
+        #    a = 50 + 250 * sigmoid(raw_x)
+        action = 50.0 + 250.0 * z
+        print('action:', action)
+        log_det_jacobian = torch.log(1.0 - torch.tanh(z_n).pow(2))
+        log_p_z = dist.log_prob(z_n) - log_det_jacobian
+        
+        # Critic for state value
+        value = self.critic(state).item()
+        
+        # Convert to numpy
+        action_np = action.detach().cpu().numpy()
+        log_prob_np = log_p_z.detach().cpu().numpy()
+        
+        return action_np, log_prob_np, value
+
 
     def learn(self):
         print('learn')
-        writer_1 = SummaryWriter('log_dir_2312')
+        writer_1 = SummaryWriter('log_dir_0303')
 
         ###### calculate advantage for each optional action (considering the future rewards) ######
         for _ in range(self.n_epochs): 
@@ -278,8 +308,16 @@ class Agent:
                 critic_value = self.critic(states) # get the value from the critic network
 
                 critic_value = torch.squeeze(critic_value) # remove the extra dimension
+            
+                # probability transformation Amit changed it is not correct yet
+                z_n = dist.sample(actions)
+                z = torch.sigmoid(z_n)
+                log_det_jacobian = torch.log(1.0 - torch.tanh(z_n).pow(2))
+                log_p_z = dist.log_prob(z_n) - log_det_jacobian
+                new_log_probs = log_p_z 
 
-                new_log_probs = dist.log_prob(actions) # calculate the log probability of the actions taken (based on our sample in choose_action)
+                #new_log_probs = dist.log_prob(actions) # calculate the log probability of the actions taken (based on our sample in choose_action)
+                
                 new_log_prob = torch.sum(new_log_probs, dim=1) # sum the log probabilities of the actions taken
                 old_log_prob = torch.sum(old_log_probs, dim=0) # used to be dim=1
                 prob_ratio = new_log_prob.exp() / old_log_prob.exp() # vector of the ratio of the new log probability to the old log probability
@@ -304,21 +342,49 @@ class Agent:
                 self.actor.optimizer.zero_grad() # zero the gradients of the actor network, so that the gradients do not accumulate
                 self.critic.optimizer.zero_grad() # zero the gradients of the critic network, so that the gradients do not accumulate
                 total_loss.backward() # compute the gradients of the total loss
+                # clip the gradients of the actor network
+                #torch.nn.utils.clip_grad_norm_(self.actor.parameters(), max_norm=10)
+                # clip the gradients of the critic network
+                torch.nn.utils.clip_grad_norm_(self.critic.parameters(), max_norm=50)
                 self.actor.optimizer.step() # update the weights of the actor network
                 self.critic.optimizer.step() # update the weights of the critic network
-            
+                #print the reward of the batch
+                #writer_1.add_scalar('Performance/Reward', np.sum(reward_arr[batch]), self.global_batch)
+                #print the mean reward of the batch
+                writer_1.add_scalar('Performance/MeanReward', np.mean(reward_arr[batch]), self.global_batch)
+                #print the norm of the gradients of the actor network
+                #writer_1.add_scalar('Gradients/actor', torch.nn.utils.clip_grad_norm_(self.actor.parameters(), 1), self.global_batch)
             # Log weights and gradients of PolicyNetwork
             for name, param in self.actor.named_parameters():
                 writer_1.add_histogram(f'PolicyNetwork/{name}', param, self.global_epoch)
-                if param.grad is not None:
+                if param.grad is not None: # if the gradients are not None
                     writer_1.add_histogram(f'PolicyNetwork/{name}.grad', param.grad, self.global_epoch)
+                    #print the norm of the gradients of the actor network
+                    #writer_1.add_scalar(f'norm2-Actor (try1)/{name}', torch.nn.utils.clip_grad_norm_(self.actor.parameters(), 1), self.global_epoch)
+                    #try2
+                    #grad_norm = param.grad.norm(2).item()
+                    #writer_1.add_scalar(f"'norm2-Actor (try2)'/{name}", grad_norm)
+                    
+                    # Compute and log L2 norm of gradients
+                    grad_norm = param.grad.norm(2).item()
+                    print(f"PolicyNetwork/{name}: Grad Norm L2 = {grad_norm:.4f}")
+                    writer_1.add_scalar(f'PolicyNetwork/{name}_grad_norm', grad_norm, self.global_epoch)
 
             # Log weights and gradients of ValueNetwork
             for name, param in self.critic.named_parameters():
                 writer_1.add_histogram(f'ValueNetwork/{name}', param, self.global_epoch)
                 if param.grad is not None:
                     writer_1.add_histogram(f'ValueNetwork/{name}.grad', param.grad, self.global_epoch)
-                
+                     #print the norm of the gradients of the actor network
+                    #writer_1.add_scalar(f'norm2-Critic (try1)/{name}', torch.nn.utils.clip_grad_norm_(self.critic.parameters(), 1), self.global_epoch)
+                    #try2
+                    #grad_norm = param.grad.norm(2).item()
+                    #writer_1.add_scalar(f"'norm2-Critic (try2)'/{name}", grad_norm)
+
+                     # Compute and log L2 norm of gradients
+                    grad_norm = param.grad.norm(2).item()
+                    print(f"ValueNetwork/{name}: Grad Norm L2 = {grad_norm:.4f}")
+                    writer_1.add_scalar(f'ValueNetwork/{name}_grad_norm', grad_norm, self.global_epoch)
             self.global_epoch += 1  
         writer_1.close()
 

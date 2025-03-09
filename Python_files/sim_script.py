@@ -14,7 +14,7 @@ import heatmap
 # simulation configuration
 simulaition_mode = 'sumo'
 sumoBinary = checkBinary(simulaition_mode)
-sumo_simulation = [sumoBinary, "-c", "SUMO_files/sim3107num2.sumocfg", "--no-warnings", "--no-step-log", "--device.rerouting.threads", "2"]  # Add --no-warnings option
+sumo_simulation = [sumoBinary, "-c", "sumo_files/sumoconfig1.sumocfg", "--no-warnings", "--no-step-log", "--device.rerouting.threads", "2"]  # Add --no-warnings option
 
 # open sumo
 traci.start(sumo_simulation)
