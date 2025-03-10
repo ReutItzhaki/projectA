@@ -104,8 +104,8 @@ class ActorNwk(nn.Module):
         self.checkpoint_file = os.path.join(save_dir, 'policy_net15.pth')
         self.actor = nn.Sequential(
             nn.Linear(n_observations, 64),
-            nn.Tanh(),
-            nn.Linear(64, 64),
+            #nn.Tanh(),
+            #nn.Linear(64, 64),
             nn.Tanh(),
             nn.Linear(64, 1) # output is a single number
         )
@@ -114,8 +114,6 @@ class ActorNwk(nn.Module):
             if isinstance(m, nn.Linear): # if the layer is a linear layer
                 init.xavier_normal_(m.weight, gain=1) # initialize the weights of the layer with xavier normal initialization
                 init.constant_(m.bias, 0)
-    
-        
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr) 
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -252,7 +250,7 @@ class Agent:
         # 3) transform => final action in [50..300]
         #    a = 50 + 250 * sigmoid(raw_x)
         action = 50.0 + 250.0 * z
-        print('action:', action)
+        
         log_det_jacobian = torch.log(1.0 - torch.tanh(z_n).pow(2))
         log_p_z = dist.log_prob(z_n) - log_det_jacobian
         
@@ -268,126 +266,204 @@ class Agent:
 
     def learn(self):
         print('learn')
-        writer_1 = SummaryWriter('log_dir_0303')
+        writer_1 = SummaryWriter('log_dir_0903')
+        '''
+        The training process consists of the following steps:
+        1) Calculate advantage
+        2) Calculate loss
+        3) Backprop and Optimize
+        4) Log performance
+        5) Repeat for multiple epochs
+        6) clear memory
+        
+        step 1: calculate advantage (A_t)
+        The Advantage Function, denoted as A_t, 
+        is used to assess the relative quality of a specific action compared to 
+        other possible actions that could have been taken from the same state (s_t).
+        If A_t > 0  → The action was better than expected based on the current policy.
+        If A_t < 0  → The action was worse than expected, so its selection probability should be reduced.
 
-        ###### calculate advantage for each optional action (considering the future rewards) ######
+        We caculate the advantage using the Generalized Advantage Estimation (GAE) method:
+        A_t = ∑(γλ)^k * δ_k
+        where δ_k = r_k + γV(s_k+1) - V(s_k)
+        r_k is the immediate reward at time step k
+        δ_k is the TD error (The difference between the current value of the state and the expected value of the state)
+        γ is the discount factor
+        λ is the GAE parameter- determines how much to look into the future
+        '''
         for _ in range(self.n_epochs): 
-            #for each epoch, we will go through the entire memory, and devide it into batches
-            # we will calculate the advantage for each batch
-            # and then calculate the actor and critic loss for each batch
-            # and then update the weights of the actor and critic networks
-            # thats in order to ansure that the agent is learning from the entire memory
-            
+            # Retrieve stored experience from memory in the form of batches
             state_arr, action_arr, old_log_prob_arr, vals_arr,\
             reward_arr, dones_arr, batches = self.memory.generate_batches()
             
-            values = vals_arr
-            advantage = np.zeros(len(reward_arr), dtype=np.float32)
+            values = vals_arr # Estimated state values from the critic network = V(s_k)
+            advantage = np.zeros(len(reward_arr), dtype=np.float32) # initialize the advantage array in a size of the reward array (which is the same size as the state array and the action array and more... )
 
+            # Loop over all time steps to compute A_t
             for t in range(len(reward_arr)-1): # for each reward given
-                discount = 1
-                a_t = 0 
-                for k in range(t, len(reward_arr)-1): # going through the future rewards, relatively to the current reward
+                discount = 1  # Initialize discount factor which is γλ
+                a_t = 0  # Initialize advantage for time step t
+                for k in range(t, len(reward_arr)-1): # Iterate over future rewards
                     if dones_arr[k]:  # Check if the state is terminal
-                        break  # Do not include value of next state if current state is terminal
-                    a_t += discount*(reward_arr[k] + self.gamma*values[k+1]*\
-                            (1-int(dones_arr[k])) - values[k]) # calculate advantage for k time step (future rewards)
-                    discount *= self.gamma*self.gae_lambda # discount factor is getting smaller for each future reward by gamma*lambda
-                advantage[t] = a_t
+                        #print('k=',k, 'is done')
+                        break  # Stop accumulating rewards if terminal state is reached
+
+                    # Compute the TD error (δ_k = r_k + γV(s_k+1) - V(s_k))
+                    td_error = reward_arr[k] + self.gamma * values[k + 1] * (1 - int(dones_arr[k])) - values[k]
+                    # 1-int(dones_arr[k]) is used to check if the state is terminal or not
+
+                    # Accumulate advantage (A_t += (γλ)^k * δ_k)
+                    a_t += discount * td_error
+                    
+                    # Update the discount factor (γλ)
+                    discount *= self.gamma * self.gae_lambda  # discount factor is getting smaller as we look further into the future
+                advantage[t] = a_t # Store computed advantage for time step t
+            # Convert advantage array to tensor for GPU computation
             advantage = torch.tensor(advantage).to(self.actor.device) # convert advantage to tensor
 
             
+            '''
+            step 2: Actor-Critic Loss Computation
+            there are few steps to compute the loss:
+            1) PPO Clipped Loss Function (Actor Loss):
+            L^{CLIP}(θ) = E_t [ min ( r_t(θ) A_t, clip (r_t(θ), 1 - ε, 1 + ε) A_t ) ]
 
+            Where:
+            ε is a small hyperparameter (typically 0.2) that prevents excessively large updates to the policy.
+            r_t(θ) is the policy ratio, defined as:
+            r_t(θ) = (π_θ(a_t|s_t) / π_{θ_{old}}(a_t|s_t))
+            This measures the relative probability of an action under the new and old policies.
+            
+            this constrains the policy ratio so that the update does not exceed a predefined range, 
+            thereby ensuring that the policy does not change too drastically in a single update step.
+
+            2) Critic Loss (Value Function Update) - Implements MSE loss:
+            L^{VF}(θ) = E_t [ (V_{θ}(s_t) - (V_target_t)^2 ]
+            
+            Where:
+            V_{θ}(s_t) is the value function estimate from the critic network
+            V_target_t = V_{θ_{old}}(s_t) + A_t 
+
+            3) Total Loss:
+            L(θ) = L^{CLIP}(θ) + L^{VF}(θ) - c * E_t [H(π_θ(s_t))]
+
+            Where:
+            H(π_θ(s_t)) is the entropy of the policy distribution
+            c is a hyperparameter that controls the strength of the entropy term
+            The entropy term encourages exploration by penalizing overly deterministic policies.
+            '''
+            
             values = torch.tensor(values).to(self.critic.device)
             for batch in batches:
+                # Convert batch data into tensors
                 states = torch.tensor(state_arr[batch], dtype=torch.float32).to(self.actor.device)
-                old_log_probs = torch.tensor(old_log_prob_arr[batch], dtype=torch.float32).to(self.actor.device)
+                old_log_prob = torch.tensor(old_log_prob_arr[batch], dtype=torch.float32).to(self.actor.device)
                 actions = torch.tensor(action_arr[batch], dtype=torch.float32).to(self.actor.device)
                 
-                dist = self.actor(states) # get the distribution of the actions from the actor network (the output of the network)
-                critic_value = self.critic(states) # get the value from the critic network
+                # Get action probabilities from the actor network
+                dist = self.actor(states) # Get normal distribution (mu, 1)
+                critic_value = self.critic(states) # Get state value estimate from critic = V_{θ}(s_t)
+                critic_value = torch.squeeze(critic_value)  # Remove extra dimension if necessary 
 
-                critic_value = torch.squeeze(critic_value) # remove the extra dimension
-            
-                # probability transformation Amit changed it is not correct yet
-                z_n = dist.sample(actions)
-                z = torch.sigmoid(z_n)
-                log_det_jacobian = torch.log(1.0 - torch.tanh(z_n).pow(2))
-                log_p_z = dist.log_prob(z_n) - log_det_jacobian
-                new_log_probs = log_p_z 
+                # Recompute log probability using the same transformation from choose_action
+                z_n = dist.sample()  # Sample raw action from new policy
+                log_det_jacobian = torch.log(1.0 - torch.tanh(z_n).pow(2))  # Log determinant correction
+                new_log_prob = dist.log_prob(z_n) - log_det_jacobian  # Corrected log probability
 
-                #new_log_probs = dist.log_prob(actions) # calculate the log probability of the actions taken (based on our sample in choose_action)
                 
-                new_log_prob = torch.sum(new_log_probs, dim=1) # sum the log probabilities of the actions taken
-                old_log_prob = torch.sum(old_log_probs, dim=0) # used to be dim=1
-                prob_ratio = new_log_prob.exp() / old_log_prob.exp() # vector of the ratio of the new log probability to the old log probability
-
-                advantage_reshaped = advantage[batch] # taking the advantage of the batch
-                weighted_probs = advantage_reshaped * prob_ratio 
+                # 1) Compute PPO's clipped objective (Actor Loss)
+                prob_ratio = new_log_prob.exp() / old_log_prob.exp() # computes the policy ratio =  r_t(θ) = (π_θ(a_t|s_t) / π_{θ_{old}}(a_t|s_t))
+                advantage_reshaped = advantage[batch] # Extract the advantage for this batch
+                weighted_probs = advantage_reshaped * prob_ratio # Unclipped probability-weighted advantage
                 weighted_clipped_probs = torch.clamp(prob_ratio, 1-self.epsilon_clip,
-                        1+self.epsilon_clip)*advantage_reshaped # clipping the ratio of the probabilities
+                        1+self.epsilon_clip)*advantage_reshaped # clipping the ratio of the probabilities 
                 
-                actor_loss = -torch.min(weighted_probs, weighted_clipped_probs) 
-                # averaging over the entire current batch
-                actor_loss = actor_loss.mean() # calculate the mean of the actor loss (over the batch)
+                # The quantity we actually want to maximize
+                actor_objective = torch.min(weighted_probs, weighted_clipped_probs).mean()
 
-                returns = advantage[batch] + values[batch]
-                critic_loss = (returns-critic_value)**2 # calculate the critic loss which is the difference between the returns and the critic value in squared
-                critic_loss = critic_loss.mean() # calculate the mean of the critic loss (over the batch)
+                # Then define the loss we pass to the optimizer (which wants to "minimize" something):
+                actor_loss = -actor_objective
 
-                total_loss = actor_loss + critic_loss 
-                writer_1.add_scalar('Loss/actor', actor_loss.item(), self.global_batch)
+                # 2) Compute Critic Loss (MSE on Value Function)
+                returns = advantage[batch] + values[batch] # Compute target value V_target, value[batch] is V_{θ_{old}}(s_t)
+                critic_loss = (returns-critic_value)**2 # Squared difference between estimated and target value
+                critic_loss = critic_loss.mean() # Average over the batch
+
+                # 3) Compute total loss
+                entropy = dist.entropy().mean() # Entropy term for better exploration
+                total_loss = actor_loss + 0.1*critic_loss - 0.01*entropy # Total loss with entropy term
+
+                #writer_1.add_scalar('Loss/actor', actor_loss.item(), self.global_batch) # we should see the loss decreasing
+                writer_1.add_scalar("ActorObjective (should go up)", actor_objective.item(), self.global_batch)
+                writer_1.add_scalar("ActorLoss (should go down)", actor_loss.item(), self.global_batch)
                 writer_1.add_scalar('Loss/critic', critic_loss.item(), self.global_batch)
-                self.global_batch += 1 
-                self.actor.optimizer.zero_grad() # zero the gradients of the actor network, so that the gradients do not accumulate
-                self.critic.optimizer.zero_grad() # zero the gradients of the critic network, so that the gradients do not accumulate
+                writer_1.add_scalar('Loss/total', total_loss.item(), self.global_batch)
+                 
+                '''
+                step 3: Backpropagation and Optimization
+                The gradients of the actor and critic networks are computed using backpropagation, with respect to total_loss.
+                (The gradients are stored in each parameter's .grad attribute.)
+                These gradients tell us which direction to move the weights to minimize the loss.
+
+                after computibg the gradients, they are clipped to prevent exploding gradients.
+                The weights of the networks are updated using the optimizer.
+
+                '''
+                # 1) zero the gradients of the actor and critic networks, so that the gradients do not accumulate
+                self.actor.optimizer.zero_grad() 
+                self.critic.optimizer.zero_grad() 
+
+                # 2) Compute Gradients Using Backpropagation
                 total_loss.backward() # compute the gradients of the total loss
-                # clip the gradients of the actor network
+                #actor_loss.backward() # compute the gradients of the actor loss
+                #critic_loss.backward() # compute the gradients of the critic loss
+
+                # 3) clip the gradients of the actor and critic networks
                 #torch.nn.utils.clip_grad_norm_(self.actor.parameters(), max_norm=10)
-                # clip the gradients of the critic network
                 torch.nn.utils.clip_grad_norm_(self.critic.parameters(), max_norm=50)
-                self.actor.optimizer.step() # update the weights of the actor network
-                self.critic.optimizer.step() # update the weights of the critic network
-                #print the reward of the batch
-                #writer_1.add_scalar('Performance/Reward', np.sum(reward_arr[batch]), self.global_batch)
-                #print the mean reward of the batch
-                writer_1.add_scalar('Performance/MeanReward', np.mean(reward_arr[batch]), self.global_batch)
-                #print the norm of the gradients of the actor network
-                #writer_1.add_scalar('Gradients/actor', torch.nn.utils.clip_grad_norm_(self.actor.parameters(), 1), self.global_batch)
-            # Log weights and gradients of PolicyNetwork
+
+                # 4) Update the Weights of the Networks based on the clipped gradients
+                self.actor.optimizer.step() 
+                self.critic.optimizer.step() 
+                
+                # 5) done with the batch
+                self.global_batch += 1
+                '''
+                log the performance of the agent during training
+                1) The norm of the gradients of the actor network
+                2) The norm of the gradients of the critic network
+                3) The weights of the actor network
+                4) The weights of the critic network
+                5) The gradients of the actor network
+                6) The gradients of the critic network
+                '''
+
+            # outside of the batch loop
+            # instide the epoch loop    
+            # Log weights and gradients of Actor Network
             for name, param in self.actor.named_parameters():
-                writer_1.add_histogram(f'PolicyNetwork/{name}', param, self.global_epoch)
+                writer_1.add_histogram(f'ActorNetwork/{name}', param, self.global_epoch) # log the weights of the actor network
                 if param.grad is not None: # if the gradients are not None
-                    writer_1.add_histogram(f'PolicyNetwork/{name}.grad', param.grad, self.global_epoch)
-                    #print the norm of the gradients of the actor network
-                    #writer_1.add_scalar(f'norm2-Actor (try1)/{name}', torch.nn.utils.clip_grad_norm_(self.actor.parameters(), 1), self.global_epoch)
-                    #try2
-                    #grad_norm = param.grad.norm(2).item()
-                    #writer_1.add_scalar(f"'norm2-Actor (try2)'/{name}", grad_norm)
-                    
-                    # Compute and log L2 norm of gradients
-                    grad_norm = param.grad.norm(2).item()
-                    print(f"PolicyNetwork/{name}: Grad Norm L2 = {grad_norm:.4f}")
-                    writer_1.add_scalar(f'PolicyNetwork/{name}_grad_norm', grad_norm, self.global_epoch)
+                    writer_1.add_histogram(f'ActorNetwork/{name}.grad', param.grad, self.global_epoch) # log the gradients of the actor network
+                    grad_norm = param.grad.norm(2).item() # Compute and log L2 norm of gradients
+                    print(f"ActorNetwork/{name}: Grad Norm L2 = {grad_norm:.4f}")
+                    writer_1.add_scalar(f'ActorNetwork/{name}_grad_norm', grad_norm, self.global_epoch)
 
-            # Log weights and gradients of ValueNetwork
+            # Log weights and gradients of Value Network
             for name, param in self.critic.named_parameters():
-                writer_1.add_histogram(f'ValueNetwork/{name}', param, self.global_epoch)
+                writer_1.add_histogram(f'ValueNetwork/{name}', param, self.global_epoch) # log the weights of the critic network
                 if param.grad is not None:
-                    writer_1.add_histogram(f'ValueNetwork/{name}.grad', param.grad, self.global_epoch)
-                     #print the norm of the gradients of the actor network
-                    #writer_1.add_scalar(f'norm2-Critic (try1)/{name}', torch.nn.utils.clip_grad_norm_(self.critic.parameters(), 1), self.global_epoch)
-                    #try2
-                    #grad_norm = param.grad.norm(2).item()
-                    #writer_1.add_scalar(f"'norm2-Critic (try2)'/{name}", grad_norm)
-
-                     # Compute and log L2 norm of gradients
-                    grad_norm = param.grad.norm(2).item()
+                    writer_1.add_histogram(f'ValueNetwork/{name}.grad', param.grad, self.global_epoch) # log the gradients of the critic network
+                    grad_norm = param.grad.norm(2).item() # Compute and log L2 norm of gradients
                     print(f"ValueNetwork/{name}: Grad Norm L2 = {grad_norm:.4f}")
                     writer_1.add_scalar(f'ValueNetwork/{name}_grad_norm', grad_norm, self.global_epoch)
-            self.global_epoch += 1  
-        writer_1.close()
 
+            # done with the epoch
+            self.global_epoch += 1
+                
+        writer_1.close()
+        # clear memory after all epochs
+        self.memory.clear_memory()
 
 
 

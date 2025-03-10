@@ -12,7 +12,6 @@ from gym_examples.envs.sumo_env import SumoEnv
 from ppo import Agent
 from torch.utils.tensorboard import SummaryWriter
 import torch
-#from torch.profiler import profile, record_function, ProfilerActivity
 
 
 class Logger:
@@ -28,9 +27,8 @@ class Logger:
         self.terminal.flush()
         self.log_file.flush()
 
-# Redirect stdout to Logger
-#sys.stdout = Logger("log2001")
-writer = SummaryWriter('log_dir_0303')
+
+writer = SummaryWriter('log_dir_0903')
 
 
 def plot_learning_curve(x, scores, figure_file):
@@ -45,10 +43,10 @@ def plot_learning_curve(x, scores, figure_file):
 ########### Hipper parameters ###########
 n_observations = 2
 n_actions = 1
-lr = 5e-3
+lr = 5e-4
 n_epochs = 8 #5
-save_dir = "log_dir_0303"
-batch_size = 64
+save_dir = "log_dir_0903"
+batch_size = 256 # 64*10
 n_episodes = 15
 episode = 1
 ##########################################
@@ -58,10 +56,10 @@ agent = Agent(n_observations=n_observations, n_actions=n_actions, lr=lr,
 
 total_step = 0
 # agent.load_models()
-print("log 14.01, 20 episodes, hyperparameters: lr: 3e-4, n_epochs: 5, batch_size: 64, gamma: 0.99, gae_lambda: 0.95, clip: 0.2")
+
 
 for k in range (1, 500): # run 500 learning iterations
-    for j in range(1,300): # moving through the sumo config files
+    for j in range(1,301): # moving through the sumo config files from 1 to 300
         score_history = []
         sumoConfig= f"sumo_files/sumoconfig{j}.sumocfg"
         # check if the sumo config file exists
@@ -76,13 +74,15 @@ for k in range (1, 500): # run 500 learning iterations
         step = 0
         start_episode = time.time()
         while not done:
-            print("time:", traci.simulation.getTime())
+            #print("time:", traci.simulation.getTime())
             action, log_probs, val = agent.choose_action(observation)
             observation_, reward, terminated, trancuated, info = env.step(action) 
             step += 1
             total_step += 1
             score +=  reward
             done = terminated or trancuated
+            if done:
+                print("episode done, step: ", step)
             agent.remember(observation, action, log_probs, val, reward, done)
             observation = observation_
         
@@ -94,7 +94,7 @@ for k in range (1, 500): # run 500 learning iterations
         print(f"episode: {episode}, score: {score:.2f}")
         print(f"episode time: {end_episode - start_episode:.2f}")
         episode += 1
-        if (j+1) % 5 == 0: # learn each 5 episodes
+        if (j+1) % 20 == 0: # learn each 5 episodes
             start_learning = time.time() 
             agent.learn()
             print("time of learning: ", time.time() - start_learning)

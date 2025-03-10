@@ -6,7 +6,7 @@ import traci
 from traci import simulation as sim
 from traci import vehicle as vcl
 from sumolib import checkBinary
-#modified ddddd
+
 
 
 class SumoEnv(gym.Env):
@@ -45,15 +45,12 @@ class SumoEnv(gym.Env):
         # SUMO execution parameters
         self.simulaition_mode = 'sumo' # change to 'sumo-gui' to open it graphically
         self.sumoBinary = checkBinary(self.simulaition_mode)
-        # init value, will be updated in reset()
-        #sumoConfig = "SUMO_files/sumoConfig2.sumocfg"
         self.sumo_simulation = [self.sumoBinary, "-c", sumoConfig, "--no-warnings", "--no-step-log", "--time-to-teleport", "-1"]
-        #self.sumo_simulation = [self.sumoBinary, "-c", "SUMO_files/sumoConfig2.sumocfg", "--no-warnings", "--no-step-log", "--time-to-teleport", "-1"]
-        #self.sumo_simulation=[self.sumoBinary, "-c", "SUMO_files/sim0503.sumocfg", "--no-warnings", "--no-step-log", "--time-to-teleport", "-1"]
         print("init sumo env")
         self.traci_connected = False
 
         self.control_cycle = 50
+        self.cycle_count=0
         self.render_mode = None 
         self.device = device
         self.step_count = 0
@@ -116,27 +113,19 @@ class SumoEnv(gym.Env):
             programID="0",
             type=0,  # static
             currentPhaseIndex=0,  # or another int
-            #subParameter=None,
-            #offset="0",
             phases=[
                 traci.trafficlight.Phase(
                     duration=int(int_green),
-                    #minDur=int(green_time),
-                    #maxDur=int(green_time),
                     state="GGGG"  # Green
                 )
                 ,
                 traci.trafficlight.Phase(
                     duration=0,
-                    #minDur=0,
-                    #maxDur=0,
                     state="yyyy"  # Yellow
                 )
                 ,
                 traci.trafficlight.Phase(
                     duration=int(int_red),
-                    #minDur=int(red_time),
-                    #maxDur=int(red_time),
                     state="rrrr"  # Red
                 )
             ]
@@ -214,63 +203,22 @@ class SumoEnv(gym.Env):
         flow_rate = float(action[0])
         flow_rate = np.clip(flow_rate, 50.0, 300.0)
         self.set_perimeter_meter(flow_rate)
-
+        self.cycle_count += 1
         arrived_vehicles = 0
         terminated = False
 
         for _ in range(self.control_cycle):
             traci.simulation.step()
             arrived_vehicles += traci.simulation.getArrivedNumber()
-            #print("arrived_vehicles: ", traci.simulation.getArrivedNumber())
-            #print("expected_vehicles: ", sim.getMinExpectedNumber())
-            # print the number of cars in the simulation that are not waiting
-            #print("not waiting: ", vcl.getIDCount())
-            if not sim.getMinExpectedNumber():
+            
+            if (not sim.getMinExpectedNumber()) or (self.cycle_count >= 64):
                 # no more vehicles expected => we can terminate
                 print("no more vehicles expected")
                 terminated = True
                 break
 
-        # Reward = (#arrived over control_cycle) / (control_cycle seconds)
-        # If we broke early, we still just use control_cycle to keep it simpler,
-        # but you could also adjust to the actual # of steps done.
-
-        #calculte the mean of waiting timefor one vehicle in the feeder edges
-        total_mean_waiting_time = 0
-        for edge in self.feeder_edges:
-            waiting_time = traci.edge.getWaitingTime(edge)
-            #how many vehicles are waiting in the edge
-            vehicles_waiting = traci.edge.getLastStepHaltingNumber(edge)
-            if(vehicles_waiting != 0):
-                waiting_time /= vehicles_waiting
-            else:
-                waiting_time = 0
-
-            total_mean_waiting_time += waiting_time
-        total_mean_waiting_time /= len(self.feeder_edges)
-
-        total_mean_waiting_time_2 = 0
-        for edge in self.protected_edges:
-            waiting_time = traci.edge.getWaitingTime(edge)
-            #how many vehicles are waiting in the edge
-            vehicles_waiting = traci.edge.getLastStepHaltingNumber(edge)
-            if(vehicles_waiting != 0):
-                waiting_time /= vehicles_waiting
-            else:
-                waiting_time = 0
-
-            total_mean_waiting_time_2 += waiting_time
-        total_mean_waiting_time_2 /= len(self.protected_edges)
-
-        total_mean_waiting_time = (total_mean_waiting_time + total_mean_waiting_time_2) /1000
-
-        #reward= -total_mean_waiting_time
-        #print("arrived_vehicles: ", arrived_vehicles)
-        #print("min expected number: ", sim.getMinExpectedNumber())
         reward = arrived_vehicles / float(self.control_cycle)
-        #print("reward: ", reward)
-        #print("arrived_vehicles: ", arrived_vehicles)
-
+        
         # Now compute densities according to the formula:
         # Dp = sum(V_i)/sum(L_i) for i in protected edges
         # Df = sum(V_i)/sum(L_i) for i in feeder edges
@@ -294,5 +242,5 @@ from gymnasium.envs.registration import register
 register(
      id="gym_examples/Sumo",
      entry_point="gym_examples.envs:SumoEnv",
-     max_episode_steps=60
+     max_episode_steps=64
 )
