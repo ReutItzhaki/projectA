@@ -1,2 +1,2 @@
 # projectA
-Hierarchical perimeter control of a transport network using PPO algorithm
+Perimeter Control of a Transport Network using PPO algorithm
